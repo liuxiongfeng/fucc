@@ -1,0 +1,223 @@
+.iconfont ,i[class*="icon"] {
+    font-family:"icon" !important;
+    font-style:normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.icon-guanbi:before { content: "\e690"; }
+.icon-yizan:before { content: "\e862"; }
+.icon-zan1:before { content: "\e863"; }
+@media only screen and (min-width: 316px){
+    html {
+        font-size: 75% !important;
+    }
+}
+@media only screen and (min-width: 375px){
+    html {
+        font-size: 80% !important;
+    }
+}
+body {
+    background-color: #fff;
+    font-family: "Microsoft YaHei",Helvetica, Arial, sans-serif;
+    outline: none;
+    font-size: 1rem;
+    color:#000;
+}
+body,  h2, p, button {
+    padding: 0px;
+    margin: 0px;
+    border: none;
+}
+img {
+    max-width: 100%;
+    height: auto;
+    border: none;
+    interpolation-mode: bicubic;
+    vertical-align: middle;
+}
+button {
+    outline: none;
+}
+.pr10 {
+    padding-right: 0.833rem;
+}
+.pr12 {
+    padding-right: 1.0rem;
+}
+.pr20 {
+    padding-right: 1.666rem;
+}
+.pl10 {
+    padding-left: 0.833rem;
+}
+.pl12 {
+    padding-left: 1.0rem;
+}
+.pt10{
+    padding-top: 0.833rem;
+}
+.pt12{
+    padding-top: 1rem;
+}
+.pb2{
+    padding-bottom: 0.166rem;
+}
+.pb3{
+    padding-bottom: 0.25rem;
+}
+.pb4{
+    padding-bottom: 0.333rem;
+}
+.pb6{
+    padding-bottom: 0.5rem;
+}
+.pb8{
+    padding-bottom: 0.666rem;
+}
+.pb10{
+    padding-bottom: 0.833rem;
+}
+.pb12{
+    padding-bottom: 1rem;
+}
+.pb12{
+    padding-bottom: 1rem;
+}
+.lh18{
+    line-height: 1.5rem;
+}
+.lh20 {
+    line-height: 1.666rem;
+}
+.lh22 {
+    line-height: 1.833rem;
+}
+.lh24 {
+    line-height: 2.0rem;
+}
+.lh26 {
+    line-height: 2.166rem;
+}
+.fs12 {
+    font-size: 1rem;
+}
+.fs13 {
+    font-size: 1.083rem;
+}
+.fs14 {
+    font-size: 1.166rem;
+}
+.fs16 {
+    font-size: 1.333rem;
+}
+.fs18 {
+    font-size: 1.5rem;
+}
+.gray{
+    color:#6f7280;
+}
+.black {
+    color: #1b1929;
+}
+.blue{
+    color:#0c3c83;
+}
+.orange {
+    color: #ff6022;
+}
+.wid60{
+    width:60%;
+}
+.dis-fx {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+}
+.flex1{
+    -webkit-box-flex: 1;
+    -moz-box-flex: 1;
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+}
+.dis-inbk{
+    display:inline-block;
+}
+.suojin {
+    text-indent: 2em;
+}
+.ckwj-cont{
+    height:2rem;
+    line-height:2rem;
+}
+.ckwj-cont img{
+    height:2rem;
+    float:left;
+    margin-right:.5rem;
+}
+.zx-fxts-box {
+    background: #fef5ed;
+    border: 1px solid #ff6022;
+    border-radius: .333rem;
+}
+.zx-main{
+    position:relative;
+}
+.zx-cont{
+    margin-bottom:2rem;
+}
+.bottom-box{
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    height:4rem;
+    background: rgba(0,0,0,0.75);
+}
+.bottom-img-box{
+    display:block;
+    padding:0.5rem;
+    text-align:center;
+}
+.bottom-img-box img{
+    height:3rem;
+}
+.guanbi-btn{
+    position:absolute;
+    right:0;
+    top:0;
+    color:#fff;
+    padding:.5rem;
+}
+.content {
+    font-size: 16px;
+    line-height:1.3;
+    margin-top: 5px;
+}
+.content p {
+    font-size: 20px;
+}
+.hint p{
+    font-size: 18px;
+    line-height:1.3;
+}
+.wechat-icon {
+    position: fixed;
+    top: 0;
+    left: -300px;
+}
+.profile{
+    margin-top: 2px;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.content-title{
+    font-size: 15px;
+    font-weight: bold;
+    line-height: 25px;
+    padding: 0px 5px;
+    border-left: 5px solid #6f7280;
+}
