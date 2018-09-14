@@ -36,14 +36,18 @@ public class EsbUtils {
     private static String loginPwd;
     private static String userToken;
     private static String viewPoint;
+    private static String label;
+    private static String viewType;
     private static Integer connectTimeout;
     private static Integer readTimeout;
+    private static String viewPointCreateESB;
     private static Log logger = LogFactory.getLog(EsbUtils.class);
 
     /**
      * 初始化静态变量
      * @throws IOException
      */
+
     private static void init() throws IOException {
         if(!propInit){
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -71,18 +75,22 @@ public class EsbUtils {
             loginPwd = properties.getProperty("loginPwd");
             userToken = properties.getProperty("userToken");
             viewPoint = properties.getProperty("viewPointESB");
+            label = properties.getProperty("labelESB");
+            viewType = properties.getProperty("viewTypeESB");
             readTimeout = Integer.valueOf(properties.getProperty("readTimeout"));
             connectTimeout = Integer.valueOf(properties.getProperty("connectTimeout"));
+            viewPointCreateESB = properties.getProperty("viewPointCreateESB");
             propInit = true;
         }
     }
 
 
     /**
+     * 获取观点详情
      * @return
      * @throws Exception
      */
-    public static JSONObject getViewPoint(String userId,String iid) throws Exception {
+    public static JSONObject getViewPoint(String userId,String iid,String type) throws Exception {
         init();
         JSONObject ret = new JSONObject();
         boolean isLogin = valadate();
@@ -91,9 +99,102 @@ public class EsbUtils {
                 JSONObject json = new JSONObject();
 
                 //先写死测试
-                json.put("I_RYBH", "admin");
-                json.put("I_ID", "78");
+                json.put("I_RYBH", userId);
+                json.put("I_ID", iid);
+                json.put("I_TYPE", type);
                 ret = getService(viewPoint, json.toString());
+                System.out.println(ret);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.error("调用crm接口失败");
+                return null;
+            }
+        } else {
+            logger.error("登录esb接口失败");
+            return null;
+        }
+        return ret;
+    }
+
+    /**
+     * 观点保存
+     * @param json
+     * @return
+     * @throws Exception
+     */
+    public static JSONObject saveView(JSONObject json) throws Exception{
+        init();
+        JSONObject ret = new JSONObject();
+        boolean isLogin = valadate();
+        if (isLogin) {
+            try {
+                ret = getService(viewPointCreateESB, json.toString());
+                System.out.println(ret);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.error("调用crm接口失败");
+                return null;
+            }
+        } else {
+            logger.error("登录esb接口失败");
+            return null;
+        }
+        return ret;
+    }
+
+
+    /**
+     * 获取观点标签
+     * @return
+     * @throws Exception
+     */
+    public static JSONObject getLabel() throws Exception {
+        init();
+        JSONObject ret = new JSONObject();
+        boolean isLogin = valadate();
+        if (isLogin) {
+            try {
+                JSONObject json = new JSONObject();
+
+                //先写死测试
+                json.put("I_PAGENO", "");
+                json.put("I_PAGELENGTH", "");
+                json.put("I_SORT", "");
+                json.put("I_UPDATE_TIME", "");
+                json.put("I_STATUS", "2");
+                json.put("I_LABEL_BLOCK", "3");
+                ret = getService(label, json.toString());
+                System.out.println(ret);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.error("调用crm接口失败");
+                return null;
+            }
+        } else {
+            logger.error("登录esb接口失败");
+            return null;
+        }
+        return ret;
+    }
+
+    /**
+     * 获取观点类型
+     * @return
+     * @throws Exception
+     */
+    public static JSONObject getViewType() throws Exception {
+        init();
+        JSONObject ret = new JSONObject();
+        boolean isLogin = valadate();
+        if (isLogin) {
+            try {
+                JSONObject json = new JSONObject();
+
+                //先写死测试
+                ret = getService(viewType, json.toString());
                 System.out.println(ret);
 
             } catch (Exception e) {
@@ -219,6 +320,7 @@ public class EsbUtils {
         JSONObject jsonParams = JSONObject.parseObject(params);
         jsonParams.put("sessionId",sessionId);
         jsonParams.put("serviceId",serviceId);
+        System.out.println(jsonParams.toString());
         jsonRet = JSONObject.parseObject(URLDecoder.decode(doPost(esbServiceUrl, jsonParams.toString(), DEFAULT_CHARSET),"utf-8"));
         return jsonRet;
     }

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="applicable-device" content="mobile"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta content="telephone=no" name="format-detection"/>
+    <meta content="black" name="apple-mobile-web-app-status-bar-style">
+    <meta content="yes" name="apple-mobile-web-app-capable"/>
+    <meta http-equiv="Cache-Control" content="no-transform"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <script type="text/javascript" src="./js/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="./js/phone.js"></script>
+    <script type="text/javascript" src="./utf8-jsp/ueditor.config.js" charset="utf-8"></script>
+    <script type="text/javascript" src="./utf8-jsp/ueditor.all.js" charset="utf-8"></script>
+    <script type="text/javascript" src="./utf8-jsp/lang/zh-cn/zh-cn.js"></script>
+    <link rel="stylesheet" th:href="@{/utf8-jsp/themes/default/css/ueditor.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/edit.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/font-awesome.min.css}">
+    <script type="text/javascript" src="./js/edit.js"></script>
+</head>
+<style>
+    img{
+        max-width: 80%;
+    }
+</style>
+<body>
+<div class="new_index">
+    <div class="wd_title">
+        <img src="/img/sh_info_ico.png">观点创建
+    </div>
+    <div class="wd_index">
+        <div class="wd_line" name="bt">
+            <!--<img src="images/sh_info_ico.png">-->
+            <label>标题</label>
+            <input type="text" id="bt" class="line_input" onkeyup="checkLength($(this),30)" placeholder="必填,30字以内">
+        </div>
+        <div class="wd_line choose-div" name="lx">
+            <label>类型</label>
+            <input type="hidden" value="">
+            <div class="choose-box">
+                <div class="choose-content">
+                    请选择
+                </div>
+                <div class="choose_right">
+                    <i class="fa fa-angle-down"></i>
+                </div>
+            </div>
+            <div class="check-show hide">
+                <div class="check-node" th:each="type,status:${viewTypes}">
+                    <span th:attr="val=${type.VIEWPOINT_TYPE},name=${type.NAME}">
+                        <input type="checkbox"/>
+                    </span>
+                    <label th:text="${type.NAME}"></label>
+                </div>
+            </div>
+        </div>
+        <div class="wd_line" name="gknr">
+            <label>公开内容</label>
+            <div class="ueditor-box">
+                <div id="content1" class="ueditor-content">
+                </div>
+                <div class="ueditor-right">
+                    <img src="/img/bz_ico.png">
+                </div>
+                <div id="editor" class="editor hide"></div>
+            </div>
+        </div>
+        <div class="wd_line" name="smnr">
+            <label>私密内容</label>
+            <div class="ueditor-box">
+                <div id="content2" class="ueditor-content">
+                </div>
+                <div class="ueditor-right">
+                    <img src="/img/bz_ico.png">
+                </div>
+                <div id="editor2" class="editor hide"></div>
+            </div>
+        </div>
+        <div class="wd_line choose-div" name="fxdj">
+            <label>风险等级</label>
+            <input type="hidden" value="">
+            <div class="choose-box">
+                <div class="choose-content">
+                    请选择
+                </div>
+                <div class="choose_right">
+                    <i class="fa fa-angle-down"></i>
+                </div>
+            </div>
+            <div class="check-show hide">
+                <div class="check-node">
+                    <span val="1" name="R1">
+                        <input type="checkbox"/>
+                    </span>
+                    <label>R1</label>
+                </div>
+                <div class="check-node">
+                    <span val="2" name="R2">
+                        <input type="checkbox"/>
+                    </span>
+                    <label>R2</label>
+                </div>
+                <div class="check-node">
+                    <span val="3" name="R3">
+                        <input type="checkbox"/>
+                    </span>
+                    <label>R3</label>
+                </div>
+                <div class="check-node">
+                    <span val="4" name="R4">
+                        <input type="checkbox"/>
+                    </span>
+                    <label>R4</label>
+                </div>
+                <div class="check-node">
+                    <span val="5" name="R5">
+                        <input type="checkbox"/>
+                    </span>
+                    <label>R5</label>
+                </div>
+            </div>
+        </div>
+        <div class="wd_line choose-div" name="sfsf">
+            <label>是否收费</label>
+            <input type="hidden" value="2">
+            <div class="choose-box">
+                <div class="choose-content">
+                    否
+                </div>
+                <div class="choose_right">
+                    <i class="fa fa-angle-down"></i>
+                </div>
+            </div>
+            <div class="check-show hide">
+                <div class="check-node">
+                    <span val="1" name="是" flag="sf">
+                        <input type="checkbox"/>
+                    </span>
+                    <label>是</label>
+                    <div class="price-div hide">
+                        <label>￥</label>
+                        <input id="jg" type="text" placeholder="价格" onkeyup="checkNum($(this))">
+                    </div>
+                </div>
+                <div class="check-node">
+                    <span class="check" val="2" name="否" flag="mf">
+                        <input type="checkbox"/>
+                    </span>
+                    <label>否</label>
+                </div>
+            </div>
+        </div>
+        <div class="wd_line" name="gdly">
+            <!--<img src="images/sh_info_ico.png">-->
+            <label>观点来源</label>
+            <input type="text" id="gdly" class="line_input" onkeyup="checkLength($(this),10)" placeholder="限制十个汉字以内">
+        </div>
+        <div class="wd_line" name="tzyj">
+            <!--<img src="images/sh_info_ico.png">-->
+            <label>投资依据</label>
+            <!--<input type="text" class="line_input" placeholder="仅做系统存档">-->
+            <textarea id="tzyj" class="line_textarea" placeholder="仅做系统存档"></textarea>
+        </div>
+        <div class="wd_line" name="zy">
+            <!--<img src="images/sh_info_ico.png">-->
+            <label>摘要</label>
+            <!--<input type="text" class="line_input" placeholder="限制四十个汉字以内">-->
+            <textarea id="zy" class="line_textarea" onkeyup="checkLength($(this),40)" placeholder="限制四十个汉字以内"></textarea>
+        </div>
+        <div class="wd_line choose-div" isMultiple="1" name="gdbq">
+            <label>观点标签</label>
+            <input type="hidden" value="">
+            <div class="choose-box">
+                <div class="choose-content">
+                    请选择
+                </div>
+                <div class="choose_right">
+                    <i class="fa fa-angle-down"></i>
+                </div>
+            </div>
+            <div class="check-show hide">
+                <div class="check-node" th:each="label,status:${labels}">
+                    <span th:attr="val=${label.LABEL_ID},name=${label.LABEL_NAME}">
+                        <input type="checkbox"/>
+                    </span>
+                    <label th:text="${label.LABEL_NAME}"></label>
+                </div>
+            </div>
+        </div>
+        <div class="wd_line2" style="border-bottom: 1px solid #d9d9d9;">
+            <img src="/img/lxr_ico.png">创建人信息
+        </div>
+        <div class="wd_line">
+            <label>登记人</label>
+            <span th:text="${ry}"></span>
+        </div>
+        <div class="btn_line">
+            <input id="save" type="submit" class="bottom_btn" value="保      存">
+        </div>
+    </div>
+    <input id="hidden" type="hidden" th:value="${result}">
+</div>
+</body>
+
+</html>

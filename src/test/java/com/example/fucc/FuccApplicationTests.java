@@ -11,6 +11,7 @@ public class FuccApplicationTests {
 
     @Test
     public void contextLoads() {
+        System.out.println("1111");
     }
 
 }

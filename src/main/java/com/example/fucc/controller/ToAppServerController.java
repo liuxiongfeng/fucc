@@ -1,5 +1,8 @@
 package com.example.fucc.controller;
 
+import ch.ethz.ssh2.Connection;
+import ch.ethz.ssh2.SCPClient;
+import ch.ethz.ssh2.SCPOutputStream;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -7,9 +10,16 @@ import com.alibaba.fastjson.TypeReference;
 import com.example.fucc.config.FunctionProperties;
 import com.example.fucc.service.AppService;
 import com.example.fucc.utils.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
@@ -18,11 +28,13 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -119,7 +131,7 @@ public class ToAppServerController {
         }
         JSONObject o   = null;
         try {
-            JSONObject dfd = EsbUtils.getViewPoint(userId,iid);
+            JSONObject dfd = EsbUtils.getViewPoint("106817","483","1");
             JSONArray o_result =  (JSONArray)dfd.get("O_RESULT");
             o = (JSONObject)o_result.get(0);
 
@@ -127,7 +139,8 @@ public class ToAppServerController {
             e.printStackTrace();
         }
         Map<String, String> params = JSONObject.parseObject(o.toJSONString(), new TypeReference<Map<String, String>>(){});
-       model.addAttribute("result", params);
+        model.addAttribute("result", params);
+        model.addAttribute("re",o.toString());
         return "viewpoint/viewDetail";
     }
 
@@ -201,4 +214,120 @@ public class ToAppServerController {
         return mv;
     }
 
+    @RequestMapping("/viewEdit")
+    public String viewEdit(HttpServletRequest request, String userId, String iid, Model model) {
+        try {
+            JSONObject label = EsbUtils.getLabel();
+            List labelList = (List)label.get("O_RESULT");
+            if (labelList.size()>0) model.addAttribute("labels",labelList);
+            JSONObject viewType = EsbUtils.getViewType();
+            List viewTypeList = (List)viewType.get("O_RESULT");
+            if(viewTypeList.size()>0) model.addAttribute("viewTypes",viewTypeList);
+            String bt = request.getParameter("bt");
+            model.addAttribute("ry","管理员");
+            String gdid = request.getParameter("gdid");
+            if(gdid!=null && !gdid.equals("")){
+                JSONObject o   = null;
+                try {
+                    JSONObject dfd = EsbUtils.getViewPoint("106817",gdid,"2");
+                    JSONArray o_result =  (JSONArray)dfd.get("O_RESULT");
+                    o = (JSONObject)o_result.get(0);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                model.addAttribute("result", o.toJSONString());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "viewpoint/edit";
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/ueditor/config",headers = "Accept=application/json")
+    public String ueditor(@RequestParam("action") String action, @RequestParam("noCache") String nocache, HttpServletRequest request, HttpServletResponse response){
+        try {
+            response.setContentType("application/json;charset=utf-8");
+            org.springframework.core.io.Resource resource = new ClassPathResource("config.json");
+            File file = resource.getFile();
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            StringBuilder stringBuilder = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null){
+                stringBuilder.append(line);
+            }
+            return stringBuilder.toString();
+        }catch (Exception e){
+            e.printStackTrace();
+            return "error";
+        }
+    }
+
+    @RequestMapping(value = "/ueditor/imgUpload")
+    @ResponseBody
+    public String imgUpload(MultipartFile upfile,HttpServletRequest request) throws FileNotFoundException {
+        String imgPath = "/home/weblogic/data/app/userfiles/Image/viewPoint";
+        String suffixName = upfile.getOriginalFilename().substring(upfile.getOriginalFilename().lastIndexOf(".")); // 获取文件的后缀名
+        String fileName = "up_" + new Date().getTime() + suffixName;
+        try {
+            SSH2Util.uploadFile(upfile,fileName,imgPath,"0640");
+            ObjectMapper mapper = new ObjectMapper();
+            HashMap<String,Object> configs = new HashMap<>();
+            configs.put("state","SUCCESS");
+            configs.put("url","Image/viewPoint/"+fileName);
+            configs.put("title","Image/viewPoint/"+fileName);
+            configs.put("original","Image/viewPoint/"+fileName);
+            return mapper.writeValueAsString(configs);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    @RequestMapping("/saveView")
+    @ResponseBody
+    public JSONObject saveView(HttpServletRequest request) throws Exception{
+        JSONObject json = new JSONObject();
+        json.put("I_VIEWPOINT_ID",request.getParameter("gdid"));
+        json.put("I_TITLE",request.getParameter("bt"));
+        json.put("I_OPEN_CONTENT",request.getParameter("gknr"));
+        json.put("I_CLOSE_CONTENT",request.getParameter("smnr"));
+        json.put("I_SOURCE",request.getParameter("gdly"));
+        json.put("I_BASIS",request.getParameter("tzyj"));
+        json.put("I_ABSTRACT",request.getParameter("zy"));
+        json.put("I_CHARGE_AMT",request.getParameter("jg"));
+        json.put("I_RISK_LEVEL",request.getParameter("fxdj"));
+        json.put("I_LABEL_ID",request.getParameter("gdbq"));
+        json.put("I_VIEWPOINT_TYPE",request.getParameter("lx"));//观点类型
+        json.put("I_IS_CHARGEABLE",request.getParameter("sfsf"));
+        //json.put("I_RYBH",request.getParameter("rybh"));//人员编号的参数
+        json.put("I_RYBH","106817");//人员编号的参数
+        if (null == request.getParameter("gdid")||"".equals(request.getParameter("gdid"))){
+            json.put("I_TYPE",1);//观点创建
+        }else {
+            json.put("I_TYPE",2);//观点编辑
+        }
+        JSONObject jsonObject = EsbUtils.saveView(json);
+        return jsonObject;
+    }
+
+    public static Connection getConnect(){
+        try {
+            Connection conn = new Connection("192.168.24.252", 22);
+            // 连接到主机
+            conn.connect();
+            // 使用用户名和密码校验
+            boolean isconn = conn.authenticateWithPassword("weblogic", "sywg1234");
+            if (!isconn) {
+                System.out.println("用户名称或者是密码不正确");
+            } else {
+                System.out.println("服务器连接成功.");
+                return conn;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
