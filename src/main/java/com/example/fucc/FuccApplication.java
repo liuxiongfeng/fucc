@@ -8,7 +8,7 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
-@ComponentScan({"com.example.fucc.controller","com.example.fucc.service"})
+@ComponentScan({"com.example.fucc.controller","com.example.fucc.service","com.example.fucc.interceptor"})
 @ServletComponentScan
 public class FuccApplication {
 

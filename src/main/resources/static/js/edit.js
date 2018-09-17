@@ -153,7 +153,7 @@ $(function() {
             var params = getParams();
             if(!validParams(params)) return;
             $.ajax({
-                url: "/saveView",
+                url: "/app/saveView",
                 dataType: "json",
                 data: params,
                 type: 'POST',
@@ -243,7 +243,7 @@ $(function() {
         };
         var init = function () {
             var str = $("#hidden").val();
-            if (str!=""){debugger;
+            if (str!=""){
                 var json = jQuery.parseJSON(str);
                 gdid = json.VIEWPOINT_ID;
                 $("#bt").val(json.TITLE);

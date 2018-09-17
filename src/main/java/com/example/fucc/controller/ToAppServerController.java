@@ -8,11 +8,14 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.example.fucc.config.FunctionProperties;
+import com.example.fucc.interceptor.InterceptorConfig;
 import com.example.fucc.service.AppService;
 import com.example.fucc.utils.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -38,8 +41,9 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
+@RequestMapping("/app")
 public class ToAppServerController {
-
+    private static final Logger logger = LoggerFactory.getLogger(ToAppServerController.class);
 
     @Resource
     private AppService appService;
@@ -147,24 +151,26 @@ public class ToAppServerController {
     /*
      * @Author: liuxiongfeng
      * @Date: 10:03 2018-8-3
+     * 待用
      * @Description: 接受app客户端的请求，解密请求数据，再转发请求数据
      **/
 
     @RequestMapping("/server")
-    public ModelAndView server(HttpServletRequest request) {
+    public ModelAndView server(HttpServletRequest request) throws Exception {
         ModelAndView mv = null;
 
-        String bizcode = request.getParameter("bizcode");
-        String data = request.getParameter("data");
-        String sign = request.getParameter("sign");
-        String timestamp = request.getParameter("timestamp");
-        String token = request.getHeader("token");//获取请求header中的token
-        String passToken = request.getHeader("passToken");//获取请求passtoken中的passtoken
+        String bizcode = request.getParameter("bizcode");                 //请求接口的功能号
+        String data = request.getParameter("data");                       //业务参数
+        String sign = request.getParameter("sign");                       //签名后的结果
+        String timestamp = request.getParameter("timestamp");             //接口的当前时间戳
+        String token = request.getHeader("token");                        //获取请求header中的token
+        String passToken = request.getHeader("passToken");                //获取请求passtoken中的passtoken
 
         //验证signkey的合法性
-        boolean b = appService.VerifySignKey(bizcode, data, sign, timestamp);
+        boolean b = appService.verifySignKey(bizcode, data, sign, timestamp);
         if (!b){
-            return null;
+            logger.error("signKey不正确!");
+            throw  new Exception("signKey不正确");
         }
         String decode = BASE64Util.decode(data);
         JSONObject dataJSON = JSONObject.parseObject(decode);
@@ -206,11 +212,13 @@ public class ToAppServerController {
         //验证token
         boolean b1 = appService.loginCookieQuery(userId, token);
         if (!b1){
-            return null;
+            logger.error("token未通过验证!");
+            System.out.println("token未通过验证!");
+            throw  new Exception("token未通过验证!");
         }
-        String function1 = FunctionProperties.getString(bizcode);
+        String path = FunctionProperties.getString(bizcode);//具体的接口路径
 
-        mv = new ModelAndView("forward:" + function1);//默认为forward模式
+        mv = new ModelAndView("forward:" + path);//默认为forward模式
         return mv;
     }
 
@@ -226,6 +234,7 @@ public class ToAppServerController {
             String bt = request.getParameter("bt");
             model.addAttribute("ry","管理员");
             String gdid = request.getParameter("gdid");
+            String token = request.getParameter("token");
             if(gdid!=null && !gdid.equals("")){
                 JSONObject o   = null;
                 try {

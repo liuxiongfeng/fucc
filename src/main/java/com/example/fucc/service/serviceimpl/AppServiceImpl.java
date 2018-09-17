@@ -15,7 +15,7 @@ public class AppServiceImpl implements AppService {
 
     //验证请求是否符合参数+signkey的加密过程
     @Override
-    public boolean VerifySignKey(String bizcode, String data, String sign, String timestamp) {
+    public boolean verifySignKey(String bizcode, String data, String sign, String timestamp) {
         String signkey = FunctionProperties.getString("signkey");
         //客户端md5之前的字符串
         String str = "bizcode=" + bizcode + "&data=" + data + "&signkey=" + signkey + "&timestamp" + timestamp;
