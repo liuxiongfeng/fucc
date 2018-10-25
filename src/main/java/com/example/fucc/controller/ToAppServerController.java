@@ -124,21 +124,35 @@ public class ToAppServerController {
      * @Date: 10:03 2018-8-3
      * @Description: 调用esb的观点接口，获取观点数据
      **/
-    @RequestMapping("/viewPoint")
-    public String viewPoint(HttpServletRequest request, String userId, String iid, Model model) {
-        if (userId == null && iid == null){
+    @RequestMapping("/viewpoint")
+    public String viewPoint(HttpServletRequest request, String userId, String viewId, Model model) {
+        if (userId == null && viewId == null){
             String param = request.getParameter("data");
-            String decode = BASE64Util.decode(param);
-            JSONObject jsonObject = JSONObject.parseObject(decode);
-            userId = jsonObject.getString("userid");
-            iid = jsonObject.getString("iid");
+            if (param != null){
+                String decode = BASE64Util.decode(param);
+                JSONObject jsonObject = JSONObject.parseObject(decode);
+                userId = jsonObject.getString("userid");
+                viewId = jsonObject.getString("iid");
+            }
+        }
+
+        if (userId == null){
+            return "请填写userId";
+        }
+        if (viewId == null){
+            return "请填写viewId";
         }
         JSONObject o   = null;
         try {
-            JSONObject dfd = EsbUtils.getViewPoint("106817","483","1");
+           // JSONObject dfd = EsbUtils.getViewPoint("106817","483","1");
+            JSONObject dfd = EsbUtils.getViewPoint(userId,viewId,"1");
             JSONArray o_result =  (JSONArray)dfd.get("O_RESULT");
-            o = (JSONObject)o_result.get(0);
-
+            if (o_result.size() != 0){
+                o = (JSONObject)o_result.get(0);
+            }else {
+                model.addAttribute("error", "未查询到观点");
+                return "未查询到观点";
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -222,36 +236,47 @@ public class ToAppServerController {
         return mv;
     }
 
-    @RequestMapping("/viewEdit")
-    public String viewEdit(HttpServletRequest request, String userId, String iid, Model model) {
-        try {
-            JSONObject label = EsbUtils.getLabel();
-            List labelList = (List)label.get("O_RESULT");
-            if (labelList.size()>0) model.addAttribute("labels",labelList);
-            JSONObject viewType = EsbUtils.getViewType();
-            List viewTypeList = (List)viewType.get("O_RESULT");
-            if(viewTypeList.size()>0) model.addAttribute("viewTypes",viewTypeList);
-            String bt = request.getParameter("bt");
-            model.addAttribute("ry","管理员");
-            String gdid = request.getParameter("gdid");
-            String token = request.getParameter("token");
-            if(gdid!=null && !gdid.equals("")){
-                JSONObject o   = null;
-                try {
-                    JSONObject dfd = EsbUtils.getViewPoint("106817",gdid,"2");
-                    JSONArray o_result =  (JSONArray)dfd.get("O_RESULT");
-                    o = (JSONObject)o_result.get(0);
+    @RequestMapping("/view/edit")
+    public String viewEdit(HttpServletRequest request,String userId, String viewId, Model model) throws Exception {
 
-                } catch (Exception e) {
-                    e.printStackTrace();
+        JSONObject label = EsbUtils.getLabel();
+        List labelList = (List) label.get("O_RESULT");
+        if (labelList.size() > 0) {
+            model.addAttribute("labels", labelList);
+        }
+        JSONObject viewType = EsbUtils.getViewType();
+        List viewTypeList = (List) viewType.get("O_RESULT");
+        if (viewTypeList.size() > 0) {
+            model.addAttribute("viewTypes", viewTypeList);
+        }
+
+        if (userId == null && viewId != null) {
+            String bt = request.getParameter("bt");
+            model.addAttribute("ry", "管理员");
+            viewId = request.getParameter("viewId");
+            String token = request.getParameter("token");
+        }
+        if (userId != null && viewId != null) {
+            JSONObject o = null;
+            try {
+                JSONObject dfd = EsbUtils.getViewPoint(userId, viewId, "2");
+                JSONArray o_result = (JSONArray) dfd.get("O_RESULT");
+                if (o_result.size() != 0) {
+                    o = (JSONObject) o_result.get(0);
+                    model.addAttribute("result", o.toJSONString());
+                    return "viewpoint/edit";
                 }
-                model.addAttribute("result", o.toJSONString());
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        }else if (viewId == null){
+            return "viewpoint/edit";
         }
         return "viewpoint/edit";
     }
+
+
 
     @ResponseBody
     @RequestMapping(value = "/ueditor/config",headers = "Accept=application/json")
@@ -310,8 +335,8 @@ public class ToAppServerController {
         json.put("I_LABEL_ID",request.getParameter("gdbq"));
         json.put("I_VIEWPOINT_TYPE",request.getParameter("lx"));//观点类型
         json.put("I_IS_CHARGEABLE",request.getParameter("sfsf"));
-        //json.put("I_RYBH",request.getParameter("rybh"));//人员编号的参数
-        json.put("I_RYBH","106817");//人员编号的参数
+        json.put("I_RYBH",request.getParameter("rybh"));//人员编号的参数
+        //json.put("I_RYBH","106817");//人员编号的参数
         if (null == request.getParameter("gdid")||"".equals(request.getParameter("gdid"))){
             json.put("I_TYPE",1);//观点创建
         }else {

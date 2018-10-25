@@ -24570,7 +24570,7 @@ UE.plugin.register('simpleupload', function (){
                 }
 
                 domUtils.on(iframe, 'load', callback);
-                form.action = utils.formatUrl("/ueditor/imgUpload?" + params);
+                form.action = utils.formatUrl("/app/ueditor/imgUpload?" + params);
                 form.submit();
             });
 

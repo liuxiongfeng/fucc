@@ -98,7 +98,6 @@ public class EsbUtils {
             try {
                 JSONObject json = new JSONObject();
 
-                //先写死测试
                 json.put("I_RYBH", userId);
                 json.put("I_ID", iid);
                 json.put("I_TYPE", type);

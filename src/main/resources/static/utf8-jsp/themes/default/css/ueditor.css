@@ -245,7 +245,7 @@ div.edui-box {
 }
 
 .edui-default .edui-toolbar .edui-for-fullscreen {
-    float: right;
+    float: left;
 }
 
 .edui-default .edui-bubble .edui-popup-content {
