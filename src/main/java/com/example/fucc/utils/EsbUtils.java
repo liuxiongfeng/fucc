@@ -36,6 +36,7 @@ public class EsbUtils {
     private static String loginPwd;
     private static String userToken;
     private static String viewPoint;
+    private static String viewPointList;
     private static String label;
     private static String viewType;
     private static Integer connectTimeout;
@@ -75,6 +76,7 @@ public class EsbUtils {
             loginPwd = properties.getProperty("loginPwd");
             userToken = properties.getProperty("userToken");
             viewPoint = properties.getProperty("viewPointESB");
+            viewPointList = properties.getProperty("viewPointListESB");
             label = properties.getProperty("labelESB");
             viewType = properties.getProperty("viewTypeESB");
             readTimeout = Integer.valueOf(properties.getProperty("readTimeout"));
@@ -104,6 +106,45 @@ public class EsbUtils {
                 ret = getService(viewPoint, json.toString());
                 System.out.println(ret);
 
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.error("调用crm接口失败");
+                return null;
+            }
+        } else {
+            logger.error("登录esb接口失败");
+            return null;
+        }
+        return ret;
+    }
+
+    /**
+     * 获取观点详情列表
+     * @return
+     * @throws Exception
+     */
+    public static JSONObject getViewPointList(String userId,String type,String pageNO,String pageLength) throws Exception {
+        init();
+        JSONObject ret = new JSONObject();
+        boolean isLogin = valadate();
+        if (isLogin) {
+            try {
+                JSONObject json = new JSONObject();
+
+                json.put("I_RYBH", userId);
+                json.put("I_TYPE", type);
+                if (StringUtils.isEmpty(pageNO)){
+                    json.put("I_PAGENO",1);
+                }else {
+                    json.put("I_PAGENO", pageNO);
+                }
+                if (StringUtils.isEmpty(pageLength)){
+                    json.put("I_PAGELENGTH", 10);
+                }else {
+                    json.put("I_PAGELENGTH", pageLength);
+                }
+                ret = getService(viewPointList, json.toString());
+                System.out.println(ret);
             } catch (Exception e) {
                 e.printStackTrace();
                 logger.error("调用crm接口失败");

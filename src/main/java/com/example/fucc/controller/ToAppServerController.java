@@ -8,12 +8,15 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.example.fucc.config.FunctionProperties;
+import com.example.fucc.constants.ConstantsUtils;
 import com.example.fucc.interceptor.InterceptorConfig;
 import com.example.fucc.service.AppService;
 import com.example.fucc.utils.*;
+import com.example.fucc.vo.ViewpointListVO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -35,10 +38,7 @@ import java.io.*;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 @RequestMapping("/app")
@@ -160,6 +160,63 @@ public class ToAppServerController {
         model.addAttribute("result", params);
         model.addAttribute("re",o.toString());
         return "viewpoint/viewDetail";
+    }
+
+    /*
+     * @Author: liuxiongfeng
+     * @Date: 10:03 2018-8-3
+     * @Description: 调用esb的观点接口，获取观点数据列表
+     **/
+    @RequestMapping("/viewpoint/list")
+    @ResponseBody
+    public ViewpointListVO<JSONObject> viewPointList(HttpServletRequest request, String userId, String type, String pageNO, String pageLength){
+        ViewpointListVO result = new ViewpointListVO();
+        List<JSONObject> list = new ArrayList<>();
+        if (userId == null){
+            result.setNote("userID不能为空");
+            return result;
+        }
+        JSONObject o   = null;
+        try {
+            JSONObject dfd = EsbUtils.getViewPointList(userId,type,pageNO,pageLength);
+            if (!"".equals(dfd.get("O_TOTALROWS")) && dfd.get("O_TOTALROWS") != null){
+                result.setRows(dfd.get("O_TOTALROWS").toString());
+            }
+            if (!"".equals(dfd.get("O_NOTE")) && dfd.get("O_NOTE") != null){
+                result.setNote(dfd.get("O_NOTE").toString());
+            }
+            if (!"".equals(dfd.get("O_CODE")) && dfd.get("O_CODE") != null){
+                result.setCode(dfd.get("O_CODE").toString());
+                if (dfd.get("O_CODE").toString().equals("1")){
+                    result.setSuccess(true);
+                }else {
+                    result.setSuccess(false);
+                }
+            }
+            if (!"".equals(dfd.get("O_NOTE")) && dfd.get("O_NOTE") != null){
+                result.setNote(dfd.get("O_NOTE").toString());
+            }
+            JSONArray o_result =  (JSONArray)dfd.get("O_RESULT");
+
+            if (o_result.size() != 0){
+                for (int i = 0; i < o_result.size(); i++) {
+                    o = (JSONObject)o_result.get(i);
+                    list.add(o);
+                }
+                result.setViewpoint(list);
+            }else {
+                result.setNote("查询成功，无数据返回");
+                result.setCode(ConstantsUtils.ESB_SUCCESS_NONE);
+                result.setRows("0");
+                result.setSuccess(false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //Map<String, String> params = JSONObject.parseObject(o.toJSONString(), new TypeReference<Map<String, String>>(){});
+        //model.addAttribute("result", params);
+        //model.addAttribute("re",o.toString());
+        return result;
     }
 
     /*
