@@ -193,9 +193,6 @@ public class ToAppServerController {
                     result.setSuccess(false);
                 }
             }
-            if (!"".equals(dfd.get("O_NOTE")) && dfd.get("O_NOTE") != null){
-                result.setNote(dfd.get("O_NOTE").toString());
-            }
             JSONArray o_result =  (JSONArray)dfd.get("O_RESULT");
 
             if (o_result.size() != 0){
