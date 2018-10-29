@@ -125,7 +125,7 @@ public class ToAppServerController {
      * @Date: 10:03 2018-8-3
      * @Description: 调用esb的观点接口，获取观点数据
      **/
-    @RequestMapping("/viewpoint")
+    @RequestMapping("/view/viewDetail")
     public String viewPoint(HttpServletRequest request, String userId, String viewId, Model model) {
         if (userId == null && viewId == null){
             String param = request.getParameter("data");
@@ -168,7 +168,7 @@ public class ToAppServerController {
      * @Date: 10:03 2018-8-3
      * @Description: 调用esb的观点接口，获取观点数据列表
      **/
-    @RequestMapping("/viewpoint/list")
+    @RequestMapping("/view/viewList")
     @ResponseBody
     public ViewpointListVO<JSONObject> viewPointList(HttpServletRequest request, String userId, String type, String pageNO, String pageLength){
         ViewpointListVO result = new ViewpointListVO();
@@ -291,7 +291,56 @@ public class ToAppServerController {
         return mv;
     }
 
-    @RequestMapping("/view/edit")
+
+    @RequestMapping("/view/viewEdit2")
+    public String viewEdit2(String token, String viewId, Model model) throws Exception {
+        //token不能为空
+        if (StringUtils.isBlank(token)){
+            throw new NullPointerException("token不能为空");
+        }
+        JSONObject label = EsbUtils.getLabel();
+        List labelList = (List) label.get("O_RESULT");
+        if (labelList.size() > 0) {
+            model.addAttribute("labels", labelList);
+        }
+        JSONObject viewType = EsbUtils.getViewType();
+        List viewTypeList = (List) viewType.get("O_RESULT");
+        if (viewTypeList.size() > 0) {
+            model.addAttribute("viewTypes", viewTypeList);
+        }
+        //暂时写死创建人为管理员
+        model.addAttribute("ry", "管理员");
+        JSONObject userInfo = EsbUtils.getCookieInfo(null,token);
+        String userId = null;
+        if (userInfo != null){
+            userId = userInfo.get("USERID").toString();
+            model.addAttribute("ry", userId);
+            model.addAttribute("rybh", userId);
+        }else {
+            throw new NullPointerException("token无效");
+        }
+        model.addAttribute("rybh", userId);
+        JSONObject o = null;
+
+        //有观点需要展示
+        if (viewId != null){
+            try {
+                JSONObject dfd = EsbUtils.getViewPoint(userId, viewId, "2");
+                JSONArray o_result = (JSONArray) dfd.get("O_RESULT");
+                if (o_result.size() != 0) {
+                    o = (JSONObject) o_result.get(0);
+                    model.addAttribute("result", o.toJSONString());
+                    return "viewpoint/edit";
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }else if (viewId == null){
+            return "viewpoint/edit";
+        }
+        return "viewpoint/edit";
+    }
+    @RequestMapping("/view/viewEdit")
     public String viewEdit(HttpServletRequest request,String userId, String viewId, Model model) throws Exception {
         if (StringUtils.isBlank(userId)){
             throw new NullPointerException("userId不能为空");

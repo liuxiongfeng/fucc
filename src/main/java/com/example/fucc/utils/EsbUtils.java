@@ -276,6 +276,32 @@ public class EsbUtils {
         return false;
     }
 
+    public static JSONObject getCookieInfo(String userId, String token) throws Exception {
+        init();
+        JSONObject ret = new JSONObject();
+        boolean isLogin = valadate();
+        if (isLogin) {
+            try {
+                JSONObject json = new JSONObject();
+                json.put("I_USERID", userId);
+                json.put("I_TOKEN", token);
+                ret = getService(userToken, json.toString());
+                System.out.println(ret);
+                JSONArray o_result =(JSONArray) ret.get("O_RESULT");
+                JSONObject o = (JSONObject)o_result.get(0);
+                if (o != null){
+                    return o;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.error("获取用户信息失败");
+            }
+        } else {
+            logger.error("登录esb接口失败");
+        }
+        return null;
+    }
+
     /**
      *esb登陆
      * @return
