@@ -29,10 +29,9 @@ public class InterceptorConfig implements HandlerInterceptor {
 
         logger.info("---------------------开始进入请求地址拦截----------------------------");
         String token = httpServletRequest.getHeader("token");
-        String userId = httpServletRequest.getHeader("userId");
-        if (null != token && null != userId){
+        if (null != token){
             //验证token
-            boolean b1 = appService.loginCookieQuery(userId, token);
+            boolean b1 = appService.loginCookieQuery(null, token);
             if (b1) {
                 return true;
             } else {
@@ -41,10 +40,10 @@ public class InterceptorConfig implements HandlerInterceptor {
                 logger.error("token未通过验证!");
 
                 //先不拦截
-                return true;
+                return false;
             }
         }else {
-            return true;
+            return false;
         }
 
     }

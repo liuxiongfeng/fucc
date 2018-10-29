@@ -289,7 +289,7 @@ public class EsbUtils {
                 System.out.println(ret);
                 JSONArray o_result =(JSONArray) ret.get("O_RESULT");
                 JSONObject o = (JSONObject)o_result.get(0);
-                if (o != null){
+                if (o.size() != 0){
                     return o;
                 }
             } catch (Exception e) {
