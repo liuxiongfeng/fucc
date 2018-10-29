@@ -170,8 +170,19 @@ public class ToAppServerController {
      **/
     @RequestMapping("/view/viewList")
     @ResponseBody
-    public ViewpointListVO<JSONObject> viewPointList(HttpServletRequest request, String userId, String type, String pageNO, String pageLength){
+    public ViewpointListVO<JSONObject> viewPointList(HttpServletRequest request,String token, String type, String pageNO, String pageLength) throws Exception {
         ViewpointListVO result = new ViewpointListVO();
+        //token不能为空
+        if (StringUtils.isBlank(token)){
+            throw new NullPointerException("token不能为空");
+        }
+        JSONObject userInfo = EsbUtils.getCookieInfo(null,token);
+        String userId = null;
+        if (userInfo != null){
+            userId = userInfo.get("USERID").toString();
+        }else {
+            throw new NullPointerException("token无效");
+        }
         List<JSONObject> list = new ArrayList<>();
         if (userId == null){
             result.setNote("userID不能为空");
@@ -292,11 +303,20 @@ public class ToAppServerController {
     }
 
 
-    @RequestMapping("/view/viewEdit2")
+    @RequestMapping("/view/viewEdit")
     public String viewEdit2(String token, String viewId, Model model) throws Exception {
         //token不能为空
         if (StringUtils.isBlank(token)){
             throw new NullPointerException("token不能为空");
+        }
+        JSONObject userInfo = EsbUtils.getCookieInfo(null,token);
+        String userId = null;
+        if (userInfo != null){
+            userId = userInfo.get("USERID").toString();
+            model.addAttribute("ry", userId);
+            model.addAttribute("rybh", userId);
+        }else {
+            throw new NullPointerException("token无效");
         }
         JSONObject label = EsbUtils.getLabel();
         List labelList = (List) label.get("O_RESULT");
@@ -308,18 +328,6 @@ public class ToAppServerController {
         if (viewTypeList.size() > 0) {
             model.addAttribute("viewTypes", viewTypeList);
         }
-        //暂时写死创建人为管理员
-        model.addAttribute("ry", "管理员");
-        JSONObject userInfo = EsbUtils.getCookieInfo(null,token);
-        String userId = null;
-        if (userInfo != null){
-            userId = userInfo.get("USERID").toString();
-            model.addAttribute("ry", userId);
-            model.addAttribute("rybh", userId);
-        }else {
-            throw new NullPointerException("token无效");
-        }
-        model.addAttribute("rybh", userId);
         JSONObject o = null;
 
         //有观点需要展示
@@ -340,7 +348,9 @@ public class ToAppServerController {
         }
         return "viewpoint/edit";
     }
-    @RequestMapping("/view/viewEdit")
+
+
+    /*@RequestMapping("/view/viewEdit")
     public String viewEdit(HttpServletRequest request,String userId, String viewId, Model model) throws Exception {
         if (StringUtils.isBlank(userId)){
             throw new NullPointerException("userId不能为空");
@@ -382,7 +392,7 @@ public class ToAppServerController {
             return "viewpoint/edit";
         }
         return "viewpoint/edit";
-    }
+    }*/
 
 
 
