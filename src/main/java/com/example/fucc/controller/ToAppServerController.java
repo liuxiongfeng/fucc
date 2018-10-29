@@ -14,6 +14,7 @@ import com.example.fucc.service.AppService;
 import com.example.fucc.utils.*;
 import com.example.fucc.vo.ViewpointListVO;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.tools.javac.jvm.Code;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -292,7 +293,9 @@ public class ToAppServerController {
 
     @RequestMapping("/view/edit")
     public String viewEdit(HttpServletRequest request,String userId, String viewId, Model model) throws Exception {
-
+        if (StringUtils.isBlank(userId)){
+            throw new NullPointerException("userId不能为空");
+        }
         JSONObject label = EsbUtils.getLabel();
         List labelList = (List) label.get("O_RESULT");
         if (labelList.size() > 0) {
@@ -303,10 +306,12 @@ public class ToAppServerController {
         if (viewTypeList.size() > 0) {
             model.addAttribute("viewTypes", viewTypeList);
         }
-
+        //暂时写死
+        model.addAttribute("ry", "管理员");
+        model.addAttribute("rybh", userId);
         if (userId == null && viewId != null) {
             String bt = request.getParameter("bt");
-            model.addAttribute("ry", "管理员");
+
             viewId = request.getParameter("viewId");
             String token = request.getParameter("token");
         }
@@ -397,6 +402,9 @@ public class ToAppServerController {
             json.put("I_TYPE",2);//观点编辑
         }
         JSONObject jsonObject = EsbUtils.saveView(json);
+        if (Integer.valueOf(jsonObject.get("code").toString()) < 0){
+            throw new NullPointerException(jsonObject.get("note").toString());
+        }
         return jsonObject;
     }
 
