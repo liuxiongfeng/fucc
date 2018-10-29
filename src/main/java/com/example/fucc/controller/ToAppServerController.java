@@ -427,7 +427,7 @@ public class ToAppServerController {
         return "";
     }
 
-    @RequestMapping("/saveView")
+    @RequestMapping("/view/saveView")
     @ResponseBody
     public JSONObject saveView(HttpServletRequest request) throws Exception{
         JSONObject json = new JSONObject();
