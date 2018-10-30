@@ -212,7 +212,7 @@ public class ToAppServerController {
                     o = (JSONObject)o_result.get(i);
                     list.add(o);
                 }
-                result.setViewpoint(list);
+                result.setInfosDetails(list);
             }else {
                 result.setNote("查询成功，无数据返回");
                 result.setCode(ConstantsUtils.ESB_SUCCESS_NONE);

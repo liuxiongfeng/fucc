@@ -13,7 +13,7 @@ public class ViewpointListVO<T> {
     private String note;
     private String rows;
     private boolean success;
-    private List<T> viewpoint;
+    private List<T> infosDetails;
 
     public String getCode() {
         return code;
@@ -47,11 +47,11 @@ public class ViewpointListVO<T> {
         this.success = success;
     }
 
-    public List<T> getViewpoint() {
-        return viewpoint;
+    public List<T> getInfosDetails() {
+        return infosDetails;
     }
 
-    public void setViewpoint(List<T> viewpoint) {
-        this.viewpoint = viewpoint;
+    public void setInfosDetails(List<T> infosDetails) {
+        this.infosDetails = infosDetails;
     }
 }
