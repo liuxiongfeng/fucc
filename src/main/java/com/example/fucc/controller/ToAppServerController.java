@@ -148,7 +148,7 @@ public class ToAppServerController {
             }
         }
         if (viewid == null){
-            return "请填写viewId!";
+            return "请填写viewId";
         }
         JSONObject o   = null;
         try {
