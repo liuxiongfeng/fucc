@@ -6,6 +6,6 @@ package com.example.fucc.service;/*
 public interface AppService {
     public boolean verifySignKey(String bizcode,String data,String sign,String timestamp);
 
-    public boolean loginCookieQuery(String userId, String token);
+    public boolean loginCookieQuery(String userid, String token);
 
 }

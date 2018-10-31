@@ -65,7 +65,7 @@ public class ToAppServerController {
         try {
             String requestUrl = request.getParameter("requestUrl");
             Map<String,String> requestMap = new HashMap();
-            requestMap.put("userId",request.getParameter("userId"));
+            requestMap.put("userid",request.getParameter("userid"));
             requestMap.put("platform",request.getParameter("platform"));
             requestMap.put("question",request.getParameter("question"));
             result = HttpClientUtil.doPost("http://192.168.25.170:9921/robot-swhy/http/RobotService",requestMap);
@@ -126,27 +126,34 @@ public class ToAppServerController {
      * @Description: 调用esb的观点接口，获取观点数据
      **/
     @RequestMapping("/view/viewDetail")
-    public String viewPoint(HttpServletRequest request, String userId, String viewId, Model model) {
-        if (userId == null && viewId == null){
+    public String viewPoint(HttpServletRequest request, String token, String viewid, Model model) throws Exception {
+        //token不能为空
+        if (StringUtils.isBlank(token)){
+            throw new NullPointerException("token不能为空");
+        }
+        JSONObject userInfo = EsbUtils.getCookieInfo(null,token);
+        String userid = null;
+        if (userInfo != null){
+            userid = userInfo.get("USERID").toString();
+        }else {
+            throw new NullPointerException("token无效");
+        }
+        if (userid == null && viewid == null){
             String param = request.getParameter("data");
             if (param != null){
                 String decode = BASE64Util.decode(param);
                 JSONObject jsonObject = JSONObject.parseObject(decode);
-                userId = jsonObject.getString("userid");
-                viewId = jsonObject.getString("iid");
+                userid = jsonObject.getString("userid");
+                viewid = jsonObject.getString("iid");
             }
         }
-
-        if (userId == null){
-            return "请填写userId";
-        }
-        if (viewId == null){
+        if (viewid == null){
             return "请填写viewId";
         }
         JSONObject o   = null;
         try {
            // JSONObject dfd = EsbUtils.getViewPoint("106817","483","1");
-            JSONObject dfd = EsbUtils.getViewPoint(userId,viewId,"1");
+            JSONObject dfd = EsbUtils.getViewPoint(userid,viewid,"1");
             JSONArray o_result =  (JSONArray)dfd.get("O_RESULT");
             if (o_result.size() != 0){
                 o = (JSONObject)o_result.get(0);
@@ -177,20 +184,20 @@ public class ToAppServerController {
             throw new NullPointerException("token不能为空");
         }
         JSONObject userInfo = EsbUtils.getCookieInfo(null,token);
-        String userId = null;
+        String userid = null;
         if (userInfo != null){
-            userId = userInfo.get("USERID").toString();
+            userid = userInfo.get("USERID").toString();
         }else {
             throw new NullPointerException("token无效");
         }
         List<JSONObject> list = new ArrayList<>();
-        if (userId == null){
+        if (userid == null){
             result.setNote("userID不能为空");
             return result;
         }
         JSONObject o   = null;
         try {
-            JSONObject dfd = EsbUtils.getViewPointList(userId,type,pageNO,pageLength);
+            JSONObject dfd = EsbUtils.getViewPointList(userid,type,pageNO,pageLength);
             if (!"".equals(dfd.get("O_TOTALROWS")) && dfd.get("O_TOTALROWS") != null){
                 result.setRows(dfd.get("O_TOTALROWS").toString());
             }
@@ -254,7 +261,7 @@ public class ToAppServerController {
         }
         String decode = BASE64Util.decode(data);
         JSONObject dataJSON = JSONObject.parseObject(decode);
-        String userId = dataJSON.get("userid").toString();
+        String userid = dataJSON.get("userid").toString();
 
         //验证passtoken
         String servletPath = request.getServletPath();
@@ -290,7 +297,7 @@ public class ToAppServerController {
             }
         }
         //验证token
-        boolean b1 = appService.loginCookieQuery(userId, token);
+        boolean b1 = appService.loginCookieQuery(userid, token);
         if (!b1){
             logger.error("token未通过验证!");
             System.out.println("token未通过验证!");
@@ -304,17 +311,17 @@ public class ToAppServerController {
 
 
     @RequestMapping("/view/viewEdit")
-    public String viewEdit2(String token, String viewId, Model model) throws Exception {
+    public String viewEdit2(String token, String viewid, Model model) throws Exception {
         //token不能为空
         if (StringUtils.isBlank(token)){
             throw new NullPointerException("token不能为空");
         }
         JSONObject userInfo = EsbUtils.getCookieInfo(null,token);
-        String userId = null;
+        String userid = null;
         if (userInfo != null){
-            userId = userInfo.get("USERID").toString();
-            model.addAttribute("ry", userId);
-            model.addAttribute("rybh", userId);
+            userid = userInfo.get("USERID").toString();
+            model.addAttribute("ry", userid);
+            model.addAttribute("rybh", userid);
         }else {
             throw new NullPointerException("token无效");
         }
@@ -331,9 +338,9 @@ public class ToAppServerController {
         JSONObject o = null;
 
         //有观点需要展示
-        if (viewId != null){
+        if (viewid != null){
             try {
-                JSONObject dfd = EsbUtils.getViewPoint(userId, viewId, "2");
+                JSONObject dfd = EsbUtils.getViewPoint(userid, viewid, "2");
                 JSONArray o_result = (JSONArray) dfd.get("O_RESULT");
                 if (o_result.size() != 0) {
                     o = (JSONObject) o_result.get(0);
@@ -343,7 +350,7 @@ public class ToAppServerController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }else if (viewId == null){
+        }else if (viewid == null){
             return "viewpoint/edit";
         }
         return "viewpoint/edit";
@@ -351,8 +358,8 @@ public class ToAppServerController {
 
 
     /*@RequestMapping("/view/viewEdit")
-    public String viewEdit(HttpServletRequest request,String userId, String viewId, Model model) throws Exception {
-        if (StringUtils.isBlank(userId)){
+    public String viewEdit(HttpServletRequest request,String userid, String viewid, Model model) throws Exception {
+        if (StringUtils.isBlank(userid)){
             throw new NullPointerException("userId不能为空");
         }
         JSONObject label = EsbUtils.getLabel();
@@ -367,17 +374,17 @@ public class ToAppServerController {
         }
         //暂时写死
         model.addAttribute("ry", "管理员");
-        model.addAttribute("rybh", userId);
-        if (userId == null && viewId != null) {
+        model.addAttribute("rybh", userid);
+        if (userid == null && viewid != null) {
             String bt = request.getParameter("bt");
 
-            viewId = request.getParameter("viewId");
+            viewid = request.getParameter("viewid");
             String token = request.getParameter("token");
         }
-        if (userId != null && viewId != null) {
+        if (userid != null && viewid != null) {
             JSONObject o = null;
             try {
-                JSONObject dfd = EsbUtils.getViewPoint(userId, viewId, "2");
+                JSONObject dfd = EsbUtils.getViewPoint(userid, viewid, "2");
                 JSONArray o_result = (JSONArray) dfd.get("O_RESULT");
                 if (o_result.size() != 0) {
                     o = (JSONObject) o_result.get(0);
@@ -388,7 +395,7 @@ public class ToAppServerController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }else if (viewId == null){
+        }else if (viewid == null){
             return "viewpoint/edit";
         }
         return "viewpoint/edit";

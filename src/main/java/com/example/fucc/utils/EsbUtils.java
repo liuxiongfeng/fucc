@@ -92,7 +92,7 @@ public class EsbUtils {
      * @return
      * @throws Exception
      */
-    public static JSONObject getViewPoint(String userId,String iid,String type) throws Exception {
+    public static JSONObject getViewPoint(String userid,String iid,String type) throws Exception {
         init();
         JSONObject ret = new JSONObject();
         boolean isLogin = valadate();
@@ -100,7 +100,7 @@ public class EsbUtils {
             try {
                 JSONObject json = new JSONObject();
 
-                json.put("I_RYBH", userId);
+                json.put("I_RYBH", userid);
                 json.put("I_ID", iid);
                 json.put("I_TYPE", type);
                 ret = getService(viewPoint, json.toString());
@@ -123,7 +123,7 @@ public class EsbUtils {
      * @return
      * @throws Exception
      */
-    public static JSONObject getViewPointList(String userId,String type,String pageNO,String pageLength) throws Exception {
+    public static JSONObject getViewPointList(String userid,String type,String pageNO,String pageLength) throws Exception {
         init();
         JSONObject ret = new JSONObject();
         boolean isLogin = valadate();
@@ -131,7 +131,7 @@ public class EsbUtils {
             try {
                 JSONObject json = new JSONObject();
 
-                json.put("I_RYBH", userId);
+                json.put("I_RYBH", userid);
                 json.put("I_TYPE", type);
                 if (StringUtils.isEmpty(pageNO)){
                     json.put("I_PAGENO",1);
@@ -249,14 +249,14 @@ public class EsbUtils {
         return ret;
     }
 
-    public static boolean loginCookieQuery(String userId, String token) throws Exception {
+    public static boolean loginCookieQuery(String userid, String token) throws Exception {
         init();
         JSONObject ret = new JSONObject();
         boolean isLogin = valadate();
         if (isLogin) {
             try {
                 JSONObject json = new JSONObject();
-                json.put("I_USERID", userId);
+                json.put("I_USERID", userid);
                 json.put("I_TOKEN", token);
                 ret = getService(userToken, json.toString());
                 System.out.println(ret);
@@ -276,14 +276,14 @@ public class EsbUtils {
         return false;
     }
 
-    public static JSONObject getCookieInfo(String userId, String token) throws Exception {
+    public static JSONObject getCookieInfo(String userid, String token) throws Exception {
         init();
         JSONObject ret = new JSONObject();
         boolean isLogin = valadate();
         if (isLogin) {
             try {
                 JSONObject json = new JSONObject();
-                json.put("I_USERID", userId);
+                json.put("I_USERID", userid);
                 json.put("I_TOKEN", token);
                 ret = getService(userToken, json.toString());
                 System.out.println(ret);

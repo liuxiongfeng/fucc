@@ -33,9 +33,9 @@ public class AppServiceImpl implements AppService {
     }
 
     @Override
-    public boolean loginCookieQuery(String userId, String token) {
+    public boolean loginCookieQuery(String userid, String token) {
         try {
-            boolean b = EsbUtils.loginCookieQuery(userId, token);
+            boolean b = EsbUtils.loginCookieQuery(userid, token);
             return b;
         } catch (Exception e) {
             e.printStackTrace();

@@ -4,7 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.example.fucc.utils.HttpClientResult;
 import com.example.fucc.utils.HttpClientUtil;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -14,10 +17,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-@RestController
+@Controller
+@RequestMapping("/cc")
 public class ToXiaoiController {
 
-    @RequestMapping("/index")
+    @RequestMapping("/home")
     public String index() {
         ModelAndView modelAndView = new ModelAndView("font/dialogApp");
         return "font/dialogApp";
@@ -50,6 +54,7 @@ public class ToXiaoiController {
      * @Description:响应前端请求,向小i平台获取数据
      **/
     @RequestMapping("/getAnswer")
+    @ResponseBody
     public JSONObject questionby(HttpServletRequest request, HttpServletResponse response){
         JSONObject jsonObject = null;
         HttpClientResult result = null;
