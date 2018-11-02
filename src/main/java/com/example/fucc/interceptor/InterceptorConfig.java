@@ -2,6 +2,7 @@ package com.example.fucc.interceptor;
 
 import com.alibaba.fastjson.JSON;
 import com.example.fucc.service.AppService;
+import com.example.fucc.utils.CommonUtils;
 import com.example.fucc.utils.EsbUtils;
 import javafx.scene.control.Alert;
 import org.slf4j.Logger;
@@ -34,14 +35,16 @@ public class InterceptorConfig implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o) throws Exception {
 
         logger.info("---------------------开始进入请求地址拦截----------------------------");
-        if (!httpServletRequest.getQueryString().contains("token")){
+
+        if (httpServletRequest.getQueryString() != null && !httpServletRequest.getQueryString().contains("token")){
             logger.error("token不存在!");
-            httpServletResponse.setContentType("application/json;charset=UTF-8");
+            /*httpServletResponse.setContentType("application/json;charset=UTF-8");
             OutputStream out = httpServletResponse.getOutputStream();
             String str = JSON.toJSONString("token不存在");
             out.write(str.getBytes("UTF-8"));
             out.flush();
-            out.close();
+            out.close();*/
+            CommonUtils.printInfo(httpServletResponse,"token不存在");
             return false;
         }
         String token = httpServletRequest.getHeader("token");
@@ -54,25 +57,27 @@ public class InterceptorConfig implements HandlerInterceptor {
             if (b1) {
                 return true;
             } else {
-                PrintWriter printWriter = httpServletResponse.getWriter();
-                printWriter.write("{code:0,message:\"token is invalid,please login again!\"}");
+               /* PrintWriter printWriter = httpServletResponse.getWriter();
+                printWriter.write("{code:0,message:\"token is invalid,please login again!\"}");*/
                 logger.error("token未通过验证!");
-                httpServletResponse.setContentType("application/json;charset=UTF-8");
+               /* httpServletResponse.setContentType("application/json;charset=UTF-8");
                 OutputStream out = httpServletResponse.getOutputStream();
                 String str = JSON.toJSONString("token未通过验证!");
                 out.write(str.getBytes("UTF-8"));
                 out.flush();
-                out.close();
+                out.close();*/
+                CommonUtils.printInfo(httpServletResponse,"token未通过验证");
                 return false;
             }
         }else {
             logger.error("token为空!");
-           httpServletResponse.setContentType("application/json;charset=UTF-8");
+           /*httpServletResponse.setContentType("application/json;charset=UTF-8");
             OutputStream out = httpServletResponse.getOutputStream();
             String str = JSON.toJSONString("token为空!");
             out.write(str.getBytes("UTF-8"));
             out.flush();
-            out.close();
+            out.close();*/
+            CommonUtils.printInfo(httpServletResponse,"token为空");
             return false;
         }
 

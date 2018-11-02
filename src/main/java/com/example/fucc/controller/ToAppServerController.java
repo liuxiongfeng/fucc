@@ -126,17 +126,17 @@ public class ToAppServerController {
      * @Description: 调用esb的观点接口，获取观点数据
      **/
     @RequestMapping("/view/viewDetail")
-    public String viewPoint(HttpServletRequest request, String token, String viewid, Model model) throws Exception {
+    public String viewPoint(HttpServletRequest request, HttpServletResponse httpServletResponse,String token, String viewid, Model model) throws Exception {
         //token不能为空
         if (StringUtils.isBlank(token)){
-            throw new NullPointerException("token不能为空");
+            CommonUtils.printInfo(httpServletResponse,"token为空");
         }
         JSONObject userInfo = EsbUtils.getCookieInfo(null,token);
         String userid = null;
         if (userInfo != null){
             userid = userInfo.get("USERID").toString();
         }else {
-            throw new NullPointerException("token无效");
+            CommonUtils.printInfo(httpServletResponse,"token无效");
         }
         if (userid == null && viewid == null){
             String param = request.getParameter("data");
@@ -148,7 +148,7 @@ public class ToAppServerController {
             }
         }
         if (viewid == null){
-            return "请填写viewId";
+            CommonUtils.printInfo(httpServletResponse,"viewid不能为空");
         }
         JSONObject o   = null;
         try {
@@ -177,18 +177,18 @@ public class ToAppServerController {
      **/
     @RequestMapping("/view/viewList")
     @ResponseBody
-    public ViewpointListVO<JSONObject> viewPointList(HttpServletRequest request,String token, String type, String pageNO, String pageLength) throws Exception {
+    public ViewpointListVO<JSONObject> viewPointList(HttpServletRequest request,HttpServletResponse httpServletResponse,String token, String type, String pageNO, String pageLength) throws Exception {
         ViewpointListVO result = new ViewpointListVO();
         //token不能为空
         if (StringUtils.isBlank(token)){
-            throw new NullPointerException("token不能为空");
+            CommonUtils.printInfo(httpServletResponse,"token不能为空");
         }
         JSONObject userInfo = EsbUtils.getCookieInfo(null,token);
         String userid = null;
         if (userInfo != null){
             userid = userInfo.get("USERID").toString();
         }else {
-            throw new NullPointerException("token无效");
+            CommonUtils.printInfo(httpServletResponse,"token无效");
         }
         List<JSONObject> list = new ArrayList<>();
         if (userid == null){
@@ -243,7 +243,7 @@ public class ToAppServerController {
      **/
 
     @RequestMapping("/server")
-    public ModelAndView server(HttpServletRequest request) throws Exception {
+    public ModelAndView server(HttpServletRequest request,HttpServletResponse httpServletResponse) throws Exception {
         ModelAndView mv = null;
 
         String bizcode = request.getParameter("bizcode");                 //请求接口的功能号

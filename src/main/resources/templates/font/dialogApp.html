@@ -7,7 +7,7 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <link rel="stylesheet" href="styles/style.css">
+    <!--<link rel="stylesheet" href="styles/style.css">-->
     <script src="http://www.weizoom.com/static/resources/js/jquery-1.7.1.min.js"></script>
     <style type="text/css" >
         /*公共样式*/
@@ -22,9 +22,6 @@
         p{margin:0;}
         input,button,select,textarea{margin:0;padding:0;border:0;outline:0;background-color:transparent;}
         /*css reset*/
-        body {
-            position: relative;
-        }
 
         .dialogue-wrapper {
             font-size: 14px;
@@ -89,21 +86,21 @@
 
         /*底部客服对话框*/
         .dialogue-wrapper .dialogue-main {
-            position: fixed;
+            /*position: fixed;*/
+            width: 90%;
+            margin: 20px auto 0px;
             display: none;
-            right: 100px;
-            bottom: 10px;
-            width: 400px;
-            height: 600px;
+            height: 0px;
             border-radius: 4px;
             box-shadow: 0 0 5px rgba(0, 0, 0, .4);
+            position: relative;
         }
 
         /*客服对话框头部*/
         .dialogue-wrapper .dialogue-main .dialogue-header {
             position: relative;
-            padding: 10px;
-            height: 80px;
+            padding: 2px 10px;
+            height: 10%;
             border-top-left-radius: 4px;
             border-top-right-radius: 4px;
             box-shadow: 0 0 5px rgba(0, 0, 0, .2);
@@ -118,6 +115,7 @@
             font-size: 22px;
             transform: rotate(90deg);
             cursor: pointer;
+            z-index: 999;
         }
 
         .dialogue-wrapper .dialogue-main .dialogue-service-info {
@@ -153,8 +151,8 @@
         /*客服对话框内容*/
         .dialogue-wrapper .dialogue-main .dialogue-contain {
             overflow-y: auto;
-            padding: 10px;
-            height: 380px;
+            padding: 0 10px;
+            height: 82%;
             word-wrap: break-word;
             background-color: #f9f9f9;
         }
@@ -165,14 +163,15 @@
             padding: 10px;
             max-width: 180px;
             white-space: pre-wrap;
-            border: 1px solid #00BFFF;
+            border: 1px solid #dbdbdb;
             border-radius: 4px;
-            background-color: #00BFFF;
+            background-color: #dbdbdb;
             box-sizing: border-box;
+            color: #363232;
         }
 
         .dialogue-wrapper .dialogue-main .dialogue-service-contain {
-            margin-bottom: 10px;
+            margin-top: 10px;
             text-align: left;
         }
 
@@ -189,7 +188,7 @@
             height: 0;
             border-top: 6px solid transparent;
             border-bottom: 6px solid transparent;
-            border-right: 10px solid #00BFFF;
+            border-right: 10px solid #dbdbdb;
             -webkit-transform: translate(0, -50%);
             transform: translate(0, -50%);
         }
@@ -212,20 +211,22 @@
             height: 0;
             border-top: 6px solid transparent;
             border-bottom: 6px solid transparent;
-            border-left: 10px solid #00BFFF;
+            border-left: 10px solid #dbdbdb;
             -webkit-transform: translate(0, -50%);
             transform: translate(0, -50%);
         }
 
         /*客服对话框底部与输入*/
         .dialogue-wrapper .dialogue-main .dialogue-submit {
-            position: relative;
-            padding: 10px;
-            height: 100px;
+            position: absolute;
+            padding: 7px;
             color: #000;
             word-wrap: break-word;
             border-top: 1px solid #ddd;
             box-sizing: border-box;
+            bottom: 0;
+            width: 100%;
+            background: #fff;
         }
 
         /*空输入提示*/
@@ -268,23 +269,39 @@
         /*输入框*/
         .dialogue-wrapper .dialogue-submit .dialogue-input-text {
             overflow-y: auto;
-            display: inline-block;
-            padding: 5px 10px;
-            width: 295px;
-            height: 70px;
-            vertical-align: middle;
+            width: 83%;
             white-space: pre-wrap;
             word-wrap: break-word;
             resize: none;
-            border-right: 1px solid #ddd;
+            border-bottom: 1px solid #d8dad8;
             box-sizing: border-box;
+            line-height: 22px;
+            font-size: 14px;
+            bottom: 12px;
+            min-height: 22px;
+            outline: none;
+            padding: 2px 10px;
+        }
+        .dialogue-wrapper .dialogue-submit .dialogue-input-text:focus{
+            border-bottom: 1px solid #6db96c;
         }
 
-        .dialogue-wrapper .dialogue-submit .dialogue-input-tools {
-            display: inline-block;
-            width: 80px;
-            height: 80px;
-            vertical-align: middle;
+        .dialogue-wrapper .dialogue-submit .dialogue-input-send {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            border: 1px solid #32be30;
+            background-color: #3cc554;
+            color: #fff;
+            padding: 3px 7px;
+            font-size: 14px;
+            border-radius: 4px;
+        }
+        .dialogue-wrapper .dialogue-submit .dialogue-input-send:active{
+            background-color: #2e833d;
+        }
+        .span-choose{
+            color: blue;
         }
     </style>
 </head>
@@ -313,9 +330,9 @@
         </div>
         <div class="dialogue-submit">
             <p id="dialogue_hint" class="dialogue-hint"><span class="dialogue-hint-icon">!</span><span class="dialogue-hint-text">发送内容不能为空</span></p>
-            <textarea id="dialogue_input" class="dialogue-input-text" placeholder="请输入您的问题，按Enter键提交（shift+Enter换行）"></textarea>
-            <div class="dialogue-input-tools">
-                小工具预留位置
+            <p id="dialogue_input" class="dialogue-input-text" contenteditable="true"></p>
+            <div id="send" class="dialogue-input-send">
+                发送
             </div>
         </div>
     </div>
@@ -331,7 +348,10 @@
         }
     };
 
-    var dialogueInput = doc.getElementById('dialogue_input'),//输入框
+    var H = ($(".dialogue-main").width())*1.7;
+
+    var send = $('#send'),//输入框
+        dialogueInput = $("#dialogue_input"),
         dialogueContain = doc.getElementById('dialogue_contain'),//聊天对话
         dialogueHint = doc.getElementById('dialogue_hint'),//提示
         btnOpen = doc.getElementById('btn_open'),//打开客服对话框
@@ -342,62 +362,47 @@
 
     btnOpen.addEventListener('click', function(e) {
         $('.dialogue-support-btn').css({'display': 'none'});
-        $('.dialogue-main').css({'display': 'inline-block', 'height': '0'});
-        $('.dialogue-main').animate({'height': '600px'})
-    })
+        $('.dialogue-main').css({'display': 'block'});
+        $('.dialogue-main').animate({'height': H})
+    });
 
     btnClose.addEventListener('click', function(e) {
         $('.dialogue-main').animate({'height': '0'}, function() {
             $('.dialogue-main').css({'display': 'none'});
             $('.dialogue-support-btn').css({'display': 'inline-block'});
         });
-    })
+    });
 
-    dialogueInput.addEventListener('keydown', function(e) {
-        var e = e || window.event;
-        if (e.keyCode == 16) {
-            shiftKeyOn = true;
-        }
-        if (shiftKeyOn) {
-            return true;
-        } else if (e.keyCode == 13 && dialogueInput.value == '') {
+    send.bind('click', function(e) {
+        var content = dialogueInput.text();
+        if (content==null || content=="") {
             // console.log('发送内容不能为空');
             // 多次触发只执行最后一次渐隐
             setTimeout(function() {
                 fadeIn(dialogueHint);
-                clearTimeout(timerId)
+                clearTimeout(timerId);
                 timer = setTimeout(function() {
                     fadeOut(dialogueHint)
                 }, 2000);
             }, 10);
             timerId = timer;
             return true;
-        } else if (e.keyCode == 13) {
+        } else {
             var nodeP = doc.createElement('p'),
                 nodeSpan = doc.createElement('span');
             nodeP.classList.add('dialogue-customer-contain');
             nodeSpan.classList.add('dialogue-text', 'dialogue-customer-text');
-            nodeSpan.innerHTML = dialogueInput.value;
+            nodeSpan.innerHTML = content;
             nodeP.appendChild(nodeSpan);
             dialogueContain.appendChild(nodeP);
             dialogueContain.scrollTop = dialogueContain.scrollHeight;
-            submitCustomerText(dialogueInput.value);
+            submitCustomerText(content);
         }
     });
 
-    dialogueInput.addEventListener('keyup', function(e) {
-        var e = e || window.event;
-        if (e.keyCode == 16) {
-            shiftKeyOn = false;
-            return true;
-        }
-        if (!shiftKeyOn && e.keyCode == 13) {
-            dialogueInput.value = null;
-        }
-    });
 
     function submitCustomerText(text) {
-        console.log(text)
+        console.log(text);
         // code here 向后端发送text内容
         $.ajax({
             type: "post",
@@ -411,10 +416,11 @@
             success: function (returnedData) {
                 console.info(returnedData);
                 getServiceText(returnedData);
+                dialogueInput.text("");
 
             },
             error: function (e) {
-              console.error(e);
+                console.error(e);
 
             }
         });
@@ -438,22 +444,61 @@
         var content = data.content;
         var contents = content.split("[\r\n]");
         var serviceText = contents[0];
-        for (var i = 1; i < contents.length - 1; i++) {
-            serviceText.append("<p style = 'color: blue' onclick='submitValue(i)'> "+i + "\\." + contents[i] + "</p>");
-        }
-        if (contents.length > 1){
-            serviceText.append(contents[contents.length]);
-        }
-
-        var nodeP = doc.createElement('p'),
-            nodeSpan = doc.createElement('span');
+        var type = serviceText.indexOf("请输入序号")>-1?true:false;
+        var nodeP = doc.createElement('p');
         nodeP.classList.add('dialogue-service-contain');
-        nodeSpan.classList.add('dialogue-text', 'dialogue-service-text');
-        //nodeSpan.innerHTML = serviceText;
-        nodeSpan.append(serviceText);
-        nodeP.appendChild(nodeSpan);
+        if (type){
+            var text = serviceText.split("\n");
+            var nodeSpan = doc.createElement('span');
+            nodeSpan.classList.add('dialogue-text', 'dialogue-service-text');
+            $.each(text,function (index,value) {
+                if (index == 0){
+                    nodeSpan.append(value);
+                }else if(index+1 == text.length){
+                    var nodeLabel = doc.createElement('label');
+                    nodeLabel.append(value);
+                    nodeSpan.appendChild(doc.createElement('br'));
+                    nodeSpan.appendChild(nodeLabel);
+                }else {
+                    var nodeLabel = doc.createElement('label');
+                    nodeLabel.classList.add('span-choose');
+                    nodeLabel.append(value);
+                    nodeSpan.appendChild(doc.createElement('br'));
+                    nodeSpan.appendChild(nodeLabel);
+                }
+            });
+            nodeP.appendChild(nodeSpan)
+        }else {
+            for (var i = 1; i < contents.length - 1; i++) {
+                serviceText.append("<p style = 'color: blue' onclick='submitValue(i)'> "+i + "\\." + contents[i] + "</p>");
+            }
+            if (contents.length > 1){
+                serviceText.append(contents[contents.length]);
+            }
+            var nodeSpan = doc.createElement('span');
+            nodeSpan.classList.add('dialogue-text', 'dialogue-service-text');
+            //nodeSpan.innerHTML = serviceText;
+            nodeSpan.append(serviceText);
+            nodeP.appendChild(nodeSpan);
+        }
         dialogueContain.appendChild(nodeP);
         dialogueContain.scrollTop = dialogueContain.scrollHeight;
+        if (type == 1){
+            $(".span-choose").each(function () {
+                $(this).unbind("click").bind("click",function () {
+                    var content = $(this).text().substring(0,$(this).text().indexOf("."));
+                    var nodeP = doc.createElement('p'),
+                        nodeSpan = doc.createElement('span');
+                    nodeP.classList.add('dialogue-customer-contain');
+                    nodeSpan.classList.add('dialogue-text', 'dialogue-customer-text');
+                    nodeSpan.innerHTML = content;
+                    nodeP.appendChild(nodeSpan);
+                    dialogueContain.appendChild(nodeP);
+                    dialogueContain.scrollTop = dialogueContain.scrollHeight;
+                    submitCustomerText(content);
+                })
+            })
+        }
     }
 
     // 渐隐
@@ -486,6 +531,7 @@
         }, 100);
         return true;
     }
+
 </script>
 </body>
 </html>
